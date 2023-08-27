@@ -1,0 +1,152 @@
+﻿@{
+    ViewData["Title"] = "Whisper App";
+}
+<center>
+    <h2 style="padding: 10px">NaturalSQL Parser</h2>
+</center>
+
+<table style="width: 100%">
+    <colgroup>
+        <col span="1" style="width: 10%;">
+        <col span="1" style="width: 90%;">
+    </colgroup>
+    <tbody>
+        <tr>
+            <td style="padding: 5px; padding-bottom: 80px; padding-top: 30px">User query: </td>
+            <td style="padding-bottom: 80px; padding-top: 30px">
+                <input style="width: 100%; border: none; outline: none; border-bottom: 1px solid #000;" id="inputField" type="text" oninput="uploadNewUserQuery()" />
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 5px">Query builder: </td>
+            <td>
+                <div style="position: relative;">
+                    <input style="width: 100%; border: none; outline: none;" id="outputField" type="text" oninput="whisperNextMove()" />
+                    <div id="dropdown" style="position: absolute; top: 100%; left: 0; display: none; border: 1px solid #ccc; background-color: white;">
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    async function uploadNewUserQuery() 
+    {
+        // Get the user input
+        const userInput = document.getElementById("inputField").value;
+
+        // get the last character
+        const lastChar = userInput.slice(-1);
+
+        // when user input ends with ".", send it to the server
+        if (lastChar === ".")
+        {
+            // Send the user input to the server
+            const response = await fetch('/api/whisper/upload', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userInput)
+            });
+
+            getFirstWhisper();
+
+            // Get the first possible whisper from the server
+        }
+    }
+
+    async function whisperNextMove() 
+    {
+        // get the dropdown element
+        const dropdown = document.getElementById("dropdown");
+        // Clear previous dropdown options
+        dropdown.innerHTML = "";
+
+
+        // get the field of the output element
+        const queryBuilder = document.getElementById("outputField");
+        // get the query build so far
+        const querySoFar = queryBuilder.value;
+        // get the last character
+        const lastChar = querySoFar.slice(-1);
+
+
+        // if lastChar is ".", whisped next move
+        if (lastChar === ".")
+        {
+            // send request to build all next moves
+            const response = await fetch('/api/whisper/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(querySoFar)
+            });
+
+            // get list of all possible next moves
+            const nextMoves = await response.json();
+
+            if (nextMoves.length > 0) 
+            {
+                // Calculate the position of the last dot character
+                const dotIndex = querySoFar.lastIndexOf(".");
+
+                // Calculate the position to place the dropdown
+                const inputRect = queryBuilder.getBoundingClientRect();
+                const inputLeft = getTextWidth(querySoFar.slice(0, dotIndex), queryBuilder);
+                const inputTop = inputRect.bottom;
+
+                // Position the dropdown element
+                dropdown.style.display = "block";
+                dropdown.style.left = `${inputLeft}px`;
+
+                // create dropdown element for each next move
+                dropdown.style.display = "block";
+                nextMoves.forEach(move => {
+                    const option = document.createElement("div");
+                    option.innerText = move;
+                    option.addEventListener("click", () => {
+                        queryBuilder.value += move;
+                        dropdown.style.display = "none";
+                    });
+                    dropdown.appendChild(option);
+                });
+            } 
+            // remove dropdown menu when no possible move available
+            else 
+            {
+                dropdown.style.display = "none";
+            }
+        } 
+        // remove dropdown menu when writing text
+        else
+        {
+            dropdown.style.display = "none";
+        }
+    }
+
+    async function getFirstWhisper()
+    {
+        // get the initial query
+        const response = await fetch('/api/whisper/init-query', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+
+        // write the first whisper to the output field
+        const whisperText = await response.text();
+		document.getElementById("outputField").value = whisperText;
+    }
+
+    // Function to calculate the width of a given text within an element
+    function getTextWidth(text, element) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        context.font = window.getComputedStyle(element).font;
+        return context.measureText(text).width;
+    }
+</script>

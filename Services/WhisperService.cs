@@ -13,7 +13,10 @@ namespace WebWhisperer.Services
 
         public List<string> ProcessInput(string inputChar)
         {
-            return new List<string> { "X", "Y", "Z" };
+            return new List<string> { 
+                "První možnost", 
+                "Druhá možnost", 
+                "Třetí možnost" };
             //if (inputChar == '.')
             //{
             //    _whisperEnabled = !_whisperEnabled; // Toggle whisper mode

@@ -1,6 +1,46 @@
 ﻿@{
     ViewData["Title"] = "Whisper App";
 }
+<style>
+    #dropdown div:hover, #dropdown div.selected {
+        background-color: green; /* Change the background color on hover or when selected */
+    }
+
+    .ai-suggestion {
+        background-color: orange;
+    }
+
+    #dropdown
+    {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        display: none;
+        border: 1px solid #ccc;
+        background-color: white;
+    }
+
+    .outputFieldClass input {
+        width: 100%;
+        border: none;
+        outline: none;
+    }
+
+    .inputFieldClass input {
+        width: 100%;
+        border: none;
+        outline: none;
+        border-bottom: 1px solid #000;
+    }
+
+    #UserInputHeading
+    {
+        padding: 5px;
+        padding-bottom: 80px;
+        padding-top: 30px
+    }
+</style>
+
 <center>
     <h2 style="padding: 10px">NaturalSQL Parser</h2>
 </center>
@@ -12,17 +52,20 @@
     </colgroup>
     <tbody>
         <tr>
-            <td style="padding: 5px; padding-bottom: 80px; padding-top: 30px">User query: </td>
+            <td id="UserInputHeading">User query: </td>
             <td style="padding-bottom: 80px; padding-top: 30px">
-                <input style="width: 100%; border: none; outline: none; border-bottom: 1px solid #000;" id="inputField" type="text" oninput="uploadNewUserQuery()" />
+                <div class="inputFieldClass">
+                    <input id="inputField" type="text" oninput="uploadNewUserQuery()" />
+                </div>
             </td>
         </tr>
         <tr>
             <td style="padding: 5px">Query builder: </td>
             <td>
                 <div style="position: relative;">
-                    <input style="width: 100%; border: none; outline: none;" id="outputField" type="text" oninput="whisperNextMove()" />
-                    <div id="dropdown" style="position: absolute; top: 100%; left: 0; display: none; border: 1px solid #ccc; background-color: white;">
+                    <div class="outputFieldClass"><input id="outputField" type="text" oninput="whisperNextMove()" />
+                    </div>
+                    <div id="dropdown">
                     </div>
                 </div>
             </td>
@@ -31,6 +74,9 @@
 </table>
 
 <script>
+    // get the field of the output element
+    const queryBuilder = document.getElementById("outputField");
+
     async function uploadNewUserQuery() 
     {
         // Get the user input
@@ -64,14 +110,10 @@
         // Clear previous dropdown options
         dropdown.innerHTML = "";
 
-
-        // get the field of the output element
-        const queryBuilder = document.getElementById("outputField");
         // get the query build so far
         const querySoFar = queryBuilder.value;
         // get the last character
         const lastChar = querySoFar.slice(-1);
-
 
         // if lastChar is ".", whisped next move
         if (lastChar === ".")
@@ -104,9 +146,18 @@
 
                 // create dropdown element for each next move
                 dropdown.style.display = "block";
-                nextMoves.forEach(move => {
+                nextMoves.forEach((move, index) => {
                     const option = document.createElement("div");
                     option.innerText = move;
+
+                    option.style.cursor = "pointer";
+                    option.style.padding = "5px"; // extra padding
+
+                    // Set background color for the first item
+                    if (index === 0) {
+                        option.classList.add("ai-suggestion");
+                    }
+
                     option.addEventListener("click", () => {
                         queryBuilder.value += move;
                         dropdown.style.display = "none";
@@ -149,4 +200,41 @@
         context.font = window.getComputedStyle(element).font;
         return context.measureText(text).width;
     }
+
+
+    // Function to update the visual selection state
+    function updateSelection() {
+        const dropdownOptions = document.querySelectorAll("#dropdown div");
+        dropdownOptions.forEach((option, index) => {
+            if (index === selectedOptionIndex) {
+                option.classList.add("selected");
+            } else {
+                option.classList.remove("selected");
+            }
+        });
+    }
+
+    let selectedOptionIndex = -1;
+
+    // Add keydown event listener to handle navigation and selection
+    document.addEventListener("keydown", (event) => {
+        const dropdownOptions = document.querySelectorAll("#dropdown div");
+
+        if (event.key === "ArrowDown") {
+            // Navigate down
+            selectedOptionIndex = (selectedOptionIndex + 1) % dropdownOptions.length;
+            updateSelection();
+        } else if (event.key === "ArrowUp") {
+            // Navigate up
+            selectedOptionIndex = (selectedOptionIndex - 1 + dropdownOptions.length) % dropdownOptions.length;
+            updateSelection();
+        } else if (event.key === "Enter") {
+            // Select option
+            if (selectedOptionIndex >= 0 && selectedOptionIndex < dropdownOptions.length) {
+                queryBuilder.value += dropdownOptions[selectedOptionIndex].innerText;
+                dropdown.style.display = "none";
+            }
+        }
+    });
+
 </script>

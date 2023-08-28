@@ -33,9 +33,9 @@ namespace WebWhisperer.Controllers
 
         [HttpPost]
         [Route("process")]
-        public ActionResult<List<string>> ProcessInput([FromBody] string inputChar)
+        public ActionResult<List<string>> ProcessInput([FromBody] string querySoFar)
         {
-            List<string> whisperText = _whisperService.ProcessInput(inputChar);
+            List<string> whisperText = _whisperService.ProcessInput(querySoFar);
             return Ok(whisperText);
         }
 

@@ -76,6 +76,10 @@
 <script>
     // get the field of the output element
     const queryBuilder = document.getElementById("outputField");
+    let querySoFar = queryBuilder.value;
+    let dotIndex = -1; // Define dotIndex at a higher scope
+
+    let nextMoves = [];
 
     async function uploadNewUserQuery() 
     {
@@ -111,9 +115,13 @@
         dropdown.innerHTML = "";
 
         // get the query build so far
-        const querySoFar = queryBuilder.value;
+        querySoFar = queryBuilder.value;
         // get the last character
         const lastChar = querySoFar.slice(-1);
+        // Calculate the position of the last dot character
+        dotIndex = querySoFar.lastIndexOf(".");
+        // Get the prefix after the last "."
+        const prefix = querySoFar.slice(dotIndex + 1);
 
         // if lastChar is ".", whisped next move
         if (lastChar === ".")
@@ -127,49 +135,45 @@
                 body: JSON.stringify(querySoFar)
             });
 
-            // get list of all possible next moves
-            const nextMoves = await response.json();
+            nextMoves = await response.json();
+        }
 
-            if (nextMoves.length > 0) 
-            {
-                // Calculate the position of the last dot character
-                const dotIndex = querySoFar.lastIndexOf(".");
+        // Filter the available next moves based on the prefix
+        const filteredMoves = nextMoves.filter(move => move.startsWith(prefix));
 
-                // Calculate the position to place the dropdown
-                const inputRect = queryBuilder.getBoundingClientRect();
-                const inputLeft = getTextWidth(querySoFar.slice(0, dotIndex), queryBuilder);
-                const inputTop = inputRect.bottom;
+        if (filteredMoves.length > 0) {
 
-                // Position the dropdown element
-                dropdown.style.display = "block";
-                dropdown.style.left = `${inputLeft}px`;
+            // Calculate the position to place the dropdown
+            const inputRect = queryBuilder.getBoundingClientRect();
+            const inputLeft = getTextWidth(querySoFar.slice(0, dotIndex), queryBuilder);
+            const inputTop = inputRect.bottom;
 
-                // create dropdown element for each next move
-                dropdown.style.display = "block";
-                nextMoves.forEach((move, index) => {
-                    const option = document.createElement("div");
-                    option.innerText = move;
+            // Position the dropdown element
+            dropdown.style.display = "block";
+            dropdown.style.left = `${inputLeft}px`;
 
-                    option.style.cursor = "pointer";
-                    option.style.padding = "5px"; // extra padding
+            // create dropdown element for each next move
+            dropdown.style.display = "block";
+            filteredMoves.forEach((move, index) => {
+                const option = document.createElement("div");
+                option.innerText = move;
 
-                    // Set background color for the first item
-                    if (index === 0) {
-                        option.classList.add("ai-suggestion");
-                    }
+                option.style.cursor = "pointer";
+                option.style.padding = "5px"; // extra padding
 
-                    option.addEventListener("click", () => {
-                        queryBuilder.value += move;
-                        dropdown.style.display = "none";
-                    });
-                    dropdown.appendChild(option);
+                // Set background color for the first item
+                if (index === 0) {
+                    option.classList.add("ai-suggestion");
+                }
+
+                option.addEventListener("click", () => {
+                    const prefix = querySoFar.slice(0, dotIndex + 1); // Prefix before the "."
+                    queryBuilder.value = prefix + move; // Replace existing text after "."
+                    dropdown.style.display = "none";
                 });
-            } 
-            // remove dropdown menu when no possible move available
-            else 
-            {
-                dropdown.style.display = "none";
-            }
+
+                dropdown.appendChild(option);
+            });
         } 
         // remove dropdown menu when writing text
         else
@@ -231,7 +235,9 @@
         } else if (event.key === "Enter") {
             // Select option
             if (selectedOptionIndex >= 0 && selectedOptionIndex < dropdownOptions.length) {
-                queryBuilder.value += dropdownOptions[selectedOptionIndex].innerText;
+                const prefix = querySoFar.slice(0, dotIndex + 1); // Prefix before the "."
+                const selectedMove = dropdownOptions[selectedOptionIndex].innerText;
+                queryBuilder.value = prefix + selectedMove; // Replace existing text after "."
                 dropdown.style.display = "none";
             }
         }

@@ -11,22 +11,12 @@ namespace WebWhisperer.Services
         private bool _whisperEnabled = false;
         private StringBuilder _whisperText = new StringBuilder();
 
-        public List<string> ProcessInput(string inputChar)
+        public List<string> ProcessInput(string querySoFar)
         {
             return new List<string> { 
                 "První možnost", 
                 "Druhá možnost", 
                 "Třetí možnost" };
-            //if (inputChar == '.')
-            //{
-            //    _whisperEnabled = !_whisperEnabled; // Toggle whisper mode
-            //}
-            //else if (_whisperEnabled)
-            //{
-            //    _whisperText.Append(char.ToLower(inputChar));
-            //}
-
-            //return _whisperText.ToString();
         }
 
         public void LoadUserInput(string userInput)

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using WebWhisperer.Models;
 using WebWhisperer.Services;
 
 namespace WebWhisperer.Controllers
@@ -35,7 +33,7 @@ namespace WebWhisperer.Controllers
         [Route("process")]
         public ActionResult<List<string>> ProcessInput([FromBody] string querySoFar)
         {
-            List<string> whisperText = _whisperService.ProcessInput(querySoFar);
+            List<string> whisperText = _whisperService.ProcessInput(querySoFar).ToList();
             return Ok(whisperText);
         }
 

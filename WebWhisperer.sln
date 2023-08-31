@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWhisperer", "WebWhisperer.csproj", "{EE6F3B27-D315-4D5E-AAD3-25F8CA17CC5F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NaturalSQLParser", "..\NaturalSQLParser\NaturalSQLParser.csproj", "{27C56E91-3422-4D24-A668-54D718129EEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EE6F3B27-D315-4D5E-AAD3-25F8CA17CC5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE6F3B27-D315-4D5E-AAD3-25F8CA17CC5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE6F3B27-D315-4D5E-AAD3-25F8CA17CC5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27C56E91-3422-4D24-A668-54D718129EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27C56E91-3422-4D24-A668-54D718129EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27C56E91-3422-4D24-A668-54D718129EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27C56E91-3422-4D24-A668-54D718129EEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

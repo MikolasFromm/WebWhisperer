@@ -44,13 +44,5 @@ namespace WebWhisperer.Controllers
             _whisperService.LoadUserInput(userInput);
             return Ok();
         }
-
-        [HttpGet]
-        [Route("init-query")]
-        public ActionResult<string> GetInitQuery()
-        {
-            string result = _whisperService.GetInitQuery();
-            return Ok(result);
-        }
     }
 }

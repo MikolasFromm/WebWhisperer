@@ -101,7 +101,7 @@
                 body: JSON.stringify(userInput)
             });
 
-            getFirstWhisper();
+            whisperNextMove();
 
             // Get the first possible whisper from the server
         }
@@ -124,7 +124,7 @@
         const prefix = querySoFar.slice(dotIndex + 1);
 
         // if lastChar is ".", whisped next move
-        if (lastChar === ".")
+        if (lastChar === "." || querySoFar === "")
         {
             // send request to build all next moves
             const response = await fetch('/api/whisper/process', {
@@ -180,21 +180,6 @@
         {
             dropdown.style.display = "none";
         }
-    }
-
-    async function getFirstWhisper()
-    {
-        // get the initial query
-        const response = await fetch('/api/whisper/init-query', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-
-        // write the first whisper to the output field
-        const whisperText = await response.text();
-		document.getElementById("outputField").value = whisperText;
     }
 
     // Function to calculate the width of a given text within an element

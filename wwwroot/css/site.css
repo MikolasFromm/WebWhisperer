@@ -20,3 +20,39 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+#dropdown div:hover, #dropdown div.selected {
+    background-color: green; /* Change the background color on hover or when selected */
+}
+
+.ai-suggestion {
+    background-color: orange;
+}
+
+#dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+.outputFieldClass input {
+    width: 100%;
+    border: none;
+    outline: none;
+}
+
+.inputFieldClass input {
+    width: 100%;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #000;
+}
+
+#UserInputHeading {
+    padding: 5px;
+    padding-bottom: 80px;
+    padding-top: 30px
+}

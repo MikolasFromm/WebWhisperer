@@ -14,11 +14,12 @@ namespace WebWhisperer.Services
         private char querySeparator = '.';
 
         private QueryAgent _queryAgent;
+        private IList<Field> _inputFields;
 
         public WhisperService()
         {
-
-            _queryAgent = QueryAgent.CreateOpenAIServerQueryAgent(new OpenAIAPI(Credentials.PersonalApiKey), CsvParser.ParseCsvFile("C:\\Users\\mikol\\Documents\\SQLMock.csv"));
+            _queryAgent = QueryAgent.CreateOpenAIServerQueryAgent(new OpenAIAPI(Credentials.PersonalApiKey), false);
+            _inputFields = CsvParser.ParseCsvFile("C:\\Users\\mikol\\Documents\\SQLMock.csv");
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace WebWhisperer.Services
 
             List<string> splittedQuerySoFar = querySoFar.Split(querySeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            var response = _queryAgent.ServerLikePerformQueryWithIndices(splittedQuerySoFar);
+            var response = _queryAgent.ServerLikePerformQueryWithIndices(splittedQuerySoFar, _inputFields);
 
             // place the suggestion to the first place
             
@@ -65,6 +66,15 @@ namespace WebWhisperer.Services
             // clear the previous query
             _querySoFar = string.Empty;
         }
-    }
 
+        /// <summary>
+        /// Returns the current table in a CSV format.
+        /// When the transformation is not done yet, it returns the latest table.
+        /// </summary>
+        /// <returns>CSV table</returns>
+        public string GetCurrentTable()
+        {
+            return string.Empty;
+        }
+    }
 }

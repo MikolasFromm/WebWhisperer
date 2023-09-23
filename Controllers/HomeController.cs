@@ -44,5 +44,21 @@ namespace WebWhisperer.Controllers
             _whisperService.LoadUserInput(userInput);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("getCurrent")]
+        public ActionResult GetCurrentTable()
+        {
+            // Call your service to get the current table data
+            string csvData = _whisperService.GetCurrentTable(); // You need to implement this method in your service
+
+            if (string.IsNullOrEmpty(csvData))
+            {
+                return NotFound(); // Return an appropriate response if the data is not found
+            }
+
+            // Assuming you want to return the CSV data as plain text
+            return Content(csvData, "text/plain");
+        }
     }
 }

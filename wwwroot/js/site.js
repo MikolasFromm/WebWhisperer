@@ -17,7 +17,7 @@ async function uploadNewUserQuery() {
     // when user input ends with ".", send it to the server
     if (lastChar === ".") {
         // Send the user input to the server
-        const response = await fetch('/api/whisper/upload', {
+        await fetch('/api/whisper/upload', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -58,6 +58,9 @@ async function whisperNextMove() {
         });
 
         nextMoves = await response.json();
+
+        // Call the function with your CSV data
+        fetchAndDisplayTable()
     }
 
     // Filter the available next moves based on the prefix
@@ -103,6 +106,35 @@ async function whisperNextMove() {
     }
 }
 
+// Function to fetch and display the current table data
+async function fetchAndDisplayTable() {
+    try
+    {
+        const response = await fetch('/api/whisper/getCurrent', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            // Assuming the response is plain text (CSV data)
+            const csvData = await response.text();
+
+            // Call a function to display the CSV data in your table
+            populateCsvTable(csvData);
+        }
+        else
+        {
+            console.error('Failed to fetch table data:', response.statusText);
+        }
+    }
+    catch (error)
+    {
+        console.error('An error occurred:', error);
+    }
+}
+
 // Function to parse CSV and populate the table
 function populateCsvTable(csvData) {
     const table = document.getElementById("csvTable");
@@ -112,7 +144,7 @@ function populateCsvTable(csvData) {
     const rows = csvData.split("\n");
 
     // Create table headers
-    const headers = rows[0].split(",");
+    const headers = rows[0].split(";");
     const thead = table.querySelector("thead");
     const headerRow = document.createElement("tr");
     headers.forEach((headerText) => {

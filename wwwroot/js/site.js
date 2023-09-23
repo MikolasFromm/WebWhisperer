@@ -3,6 +3,7 @@
 // get the field of the output element
 const queryBuilder = document.getElementById("outputField");
 let querySoFar = queryBuilder.value;
+let querySoFarLength = 0;
 let dotIndex = -1; // Define dotIndex at a higher scope
 
 let nextMoves = [];
@@ -46,8 +47,9 @@ async function whisperNextMove() {
     // Get the prefix after the last "."
     const prefix = querySoFar.slice(dotIndex + 1);
 
-    // if lastChar is ".", whisped next move
-    if (lastChar === "." || querySoFar === "") {
+    // if lastChar is "." or the default empty, whisped next move.
+    // also whisper only when the query is longer than before -> meaning that the user is writing, not jsut deleting
+    if ((lastChar === "." || querySoFar === "")) {
         // send request to build all next moves
         const response = await fetch('/api/whisper/process', {
             method: 'POST',
@@ -62,6 +64,8 @@ async function whisperNextMove() {
         // Call the function with your CSV data
         fetchAndDisplayTable()
     }
+
+    querySoFarLength = querySoFar.length;
 
     // Filter the available next moves based on the prefix
     const filteredMoves = nextMoves.filter(move => move.startsWith(prefix));
@@ -139,20 +143,26 @@ async function fetchAndDisplayTable() {
 function populateCsvTable(csvData) {
     const table = document.getElementById("csvTable");
     const tbody = table.querySelector("tbody");
+    const thead = table.querySelector("thead");
+
+    // Clear existing table data
+    tbody.innerHTML = '';
+    thead.innerHTML = '';
 
     // Split CSV data into rows
     const rows = csvData.split("\n");
 
     // Create table headers
-    const headers = rows[0].split(";");
-    const thead = table.querySelector("thead");
+    const headers = rows[0].split(",");
+
+    // Create a separate table header for each column
     const headerRow = document.createElement("tr");
     headers.forEach((headerText) => {
         const th = document.createElement("th");
         th.textContent = headerText;
         headerRow.appendChild(th);
+        thead.appendChild(headerRow);
     });
-    thead.appendChild(headerRow);
 
     // Create table rows and cells
     for (let i = 1; i < rows.length; i++) {
@@ -166,6 +176,7 @@ function populateCsvTable(csvData) {
         tbody.appendChild(row);
     }
 }
+
 
 
 // Function to calculate the width of a given text within an element

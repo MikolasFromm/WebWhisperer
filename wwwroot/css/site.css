@@ -56,3 +56,15 @@ body {
     padding-bottom: 80px;
     padding-top: 30px
 }
+
+/* Center the table horizontally within the container */
+#tableContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#csvTable {
+    width: 80%; /* Adjust the width as needed */
+}

@@ -2,6 +2,7 @@
 using NaturalSQLParser.Query;
 using NaturalSQLParser.Query.Secrets;
 using NaturalSQLParser.Types;
+using NaturalSQLParser.Types.Tranformations;
 using OpenAI_API;
 
 namespace WebWhisperer.Services
@@ -14,11 +15,12 @@ namespace WebWhisperer.Services
         private char querySeparator = '.';
 
         private QueryAgent _queryAgent;
-        private IList<Field> _inputFields;
+        private List<Field> _inputFields;
+        private IEnumerable<ITransformation> _transformations;
 
         public WhisperService()
         {
-            _queryAgent = QueryAgent.CreateOpenAIServerQueryAgent(new OpenAIAPI(Credentials.PersonalApiKey), false);
+            _queryAgent = QueryAgent.CreateOpenAIServerQueryAgent(new OpenAIAPI(Credentials.PersonalApiKey), true);
             _inputFields = CsvParser.ParseCsvFile("C:\\Users\\mikol\\Documents\\SQLMock.csv");
         }
 
@@ -49,6 +51,7 @@ namespace WebWhisperer.Services
                 return nextMovesList;
             }
 
+            _transformations = response.Transformations;
             return response.NextMoves;
         }
 
@@ -74,7 +77,16 @@ namespace WebWhisperer.Services
         /// <returns>CSV table</returns>
         public string GetCurrentTable()
         {
-            return string.Empty;
+            if (_transformations is not null)
+            {
+                var fields = Transformator.TransformFields(_inputFields, _transformations);
+                var result = CsvParser.ParseFieldsIntoCsv(fields);
+                return result;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 }

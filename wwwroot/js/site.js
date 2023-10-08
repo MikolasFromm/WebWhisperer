@@ -8,6 +8,10 @@ let dotIndex = -1; // Define dotIndex at a higher scope
 
 let nextMoves = [];
 
+
+// Get references to the file input and upload button
+const csvFileInput = document.getElementById("csvFileInput");
+
 async function uploadNewUserQuery() {
     // Get the user input
     const userInput = document.getElementById("inputField").value;
@@ -143,6 +147,30 @@ async function fetchAndDisplayTable() {
     }
 }
 
+// Function to send the selected CSV file to the server for processing
+async function sendCsvFileToServer(file) {
+    try {
+        const formData = new FormData();
+        formData.append("csvFile", file);
+
+        const response = await fetch('/api/whisper/uploadCsv', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            console.log('CSV file uploaded successfully.');
+            // Handle the server's response if needed
+        } else {
+            console.error('Failed to upload CSV file:', response.statusText);
+            // Handle the error if needed
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
+        // Handle the error if needed
+    }
+}
+
 // Function to parse CSV and populate the table
 function populateCsvTable(csvData) {
     const table = document.getElementById("csvTable");
@@ -181,8 +209,6 @@ function populateCsvTable(csvData) {
     }
 }
 
-
-
 // Function to calculate the width of a given text within an element
 function getTextWidth(text, element) {
     const canvas = document.createElement("canvas");
@@ -203,6 +229,7 @@ function updateSelection() {
         }
     });
 }
+
 
 let selectedOptionIndex = -1;
 
@@ -226,5 +253,21 @@ document.addEventListener("keydown", (event) => {
             queryBuilder.value = prefix + selectedMove; // Replace existing text after "."
             dropdown.style.display = "none";
         }
+    }
+});
+
+// Add an event listener to the file input to handle file selection
+csvFileInput.addEventListener("change", () => {
+    const selectedFile = csvFileInput.files[0];
+
+    if (selectedFile) {
+        // You can display the selected file name or handle the file here
+        console.log("Selected CSV file: " + selectedFile.name);
+
+        // Trigger the file upload automatically
+        sendCsvFileToServer(selectedFile);
+
+        // Reset the file input to allow selecting another file if needed
+        //csvFileInput.value = "";
     }
 });

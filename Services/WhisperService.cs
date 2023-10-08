@@ -18,10 +18,19 @@ namespace WebWhisperer.Services
         private List<Field> _inputFields;
         private IEnumerable<ITransformation> _transformations;
 
+        private bool _isInputFieldLoaded = false;
+
         public WhisperService()
         {
             _queryAgent = QueryAgent.CreateOpenAIServerQueryAgent(new OpenAIAPI(Credentials.PersonalApiKey), true);
-            _inputFields = CsvParser.ParseCsvFile("C:\\Users\\mikol\\Documents\\SQLMock.csv");
+        }
+
+        public bool IsIntputFieldLoaded { get { return _isInputFieldLoaded; } }
+
+        public void LoadInputFields(List<Field> inputFields)
+        {
+            _inputFields = inputFields;
+            _isInputFieldLoaded = true;
         }
 
         /// <summary>

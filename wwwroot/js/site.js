@@ -47,9 +47,13 @@ async function whisperNextMove() {
     // Get the prefix after the last "."
     const prefix = querySoFar.slice(dotIndex + 1);
 
+    console.log("Current len: " + querySoFar.length);
+    console.log("Last len   : " + querySoFarLength);
+  
+
     // if lastChar is "." or the default empty, whisped next move.
     // also whisper only when the query is longer than before -> meaning that the user is writing, not jsut deleting
-    if ((lastChar === "." || querySoFar === "")) {
+    if ((lastChar === "." && querySoFar.length > querySoFarLength) || querySoFar === "") {
         // send request to build all next moves
         const response = await fetch('/api/whisper/process', {
             method: 'POST',

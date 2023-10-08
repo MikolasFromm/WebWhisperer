@@ -44,7 +44,6 @@ namespace WebWhisperer.Services
             _querySoFar = querySoFar;
 
             // process the query
-
             List<string> splittedQuerySoFar = querySoFar.Split(querySeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             var response = _queryAgent.ServerLikePerformQueryWithIndices(splittedQuerySoFar, _inputFields);

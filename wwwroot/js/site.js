@@ -50,9 +50,6 @@ async function whisperNextMove() {
     dotIndex = querySoFar.lastIndexOf(".");
     // Get the prefix after the last "."
     const prefix = querySoFar.slice(dotIndex + 1);
-
-    console.log("Current len: " + querySoFar.length);
-    console.log("Last len   : " + querySoFarLength);
   
 
     // if lastChar is "." or the default empty, whisped next move.
@@ -138,7 +135,7 @@ async function fetchAndDisplayTable() {
         }
         else
         {
-            console.error('Failed to fetch table data:', response.statusText);
+            clearTable();
         }
     }
     catch (error)
@@ -207,6 +204,17 @@ function populateCsvTable(csvData) {
         });
         tbody.appendChild(row);
     }
+}
+
+// Function to clear the table
+function clearTable() {
+    const table = document.getElementById("csvTable");
+    const tbody = table.querySelector("tbody");
+    const thead = table.querySelector("thead");
+
+    // Clear existing table data
+    tbody.innerHTML = '';
+    thead.innerHTML = '';
 }
 
 // Function to calculate the width of a given text within an element

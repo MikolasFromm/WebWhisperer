@@ -43,6 +43,9 @@ namespace WebWhisperer.Services
             // load the new query
             _querySoFar = querySoFar;
 
+            // clear the transformations when processing a new input
+            _transformations = new List<ITransformation>();
+
             // process the query
             List<string> splittedQuerySoFar = querySoFar.Split(querySeparator, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -85,7 +88,7 @@ namespace WebWhisperer.Services
         /// <returns>CSV table</returns>
         public string GetCurrentTable()
         {
-            if (_transformations is not null)
+            if (_transformations is not null && _transformations.Any())
             {
                 var fields = Transformator.TransformFields(_inputFields, _transformations);
                 var result = CsvParser.ParseFieldsIntoCsv(fields);
